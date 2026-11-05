@@ -1,3 +1,7 @@
+> **HarmonyOS downstream: [ho-llama.cpp](https://github.com/hkrc-agents/ho-llama.cpp).**
+> Start with [HARMONYOS.md](HARMONYOS.md) for CPU builds, packaging and qualification status.
+> This is a community fork, not an official upstream release.
+
 # llama.cpp
 
 ![llama](https://raw.githubusercontent.com/ggml-org/llama.brand/refs/heads/master/cover/llama-cpp/cover-llama-cpp-dark.svg)

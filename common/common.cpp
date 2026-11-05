@@ -145,7 +145,7 @@ int32_t common_cpu_get_num_physical_cores() {
     return n_threads > 0 ? (n_threads <= 4 ? n_threads : n_threads / 2) : 4;
 }
 
-#if defined(__x86_64__) && defined(__linux__) && !defined(__ANDROID__)
+#if defined(__x86_64__) && defined(__linux__) && !defined(__ANDROID__) && !defined(__OHOS__)
 #include <pthread.h>
 
 static void cpuid(unsigned leaf, unsigned subleaf,
@@ -199,7 +199,7 @@ static int cpu_count_math_cpus(int n_cpu) {
  * Returns number of CPUs on system that are useful for math.
  */
 int32_t common_cpu_get_num_math() {
-#if defined(__x86_64__) && defined(__linux__) && !defined(__ANDROID__)
+#if defined(__x86_64__) && defined(__linux__) && !defined(__ANDROID__) && !defined(__OHOS__)
     int n_cpu = sysconf(_SC_NPROCESSORS_ONLN);
     if (n_cpu < 1) {
         return common_cpu_get_num_physical_cores();

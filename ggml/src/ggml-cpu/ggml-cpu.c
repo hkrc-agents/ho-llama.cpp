@@ -2602,7 +2602,7 @@ static bool ggml_thread_apply_priority(int32_t prio) {
     return true;
 }
 
-#elif defined(__APPLE__)
+#elif defined(__APPLE__) || defined(__OHOS__)
 #include <sys/types.h>
 #include <sys/resource.h>
 

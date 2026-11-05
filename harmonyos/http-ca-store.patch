@@ -1,0 +1,44 @@
+diff --git a/common/http.h b/common/http.h
+--- a/common/http.h
++++ b/common/http.h
+@@ -1,5 +1,9 @@
+ #pragma once
+ 
+ #include <cpp-httplib/httplib.h>
++
++#if defined(__OHOS__) && defined(CPPHTTPLIB_SSL_ENABLED)
++#include "ohos-http-ca-store.h"
++#endif
+ 
+ #ifdef _WIN32
+@@ -123,3 +127,9 @@
+     cli.set_follow_location(true);
+ 
++#if defined(__OHOS__) && defined(CPPHTTPLIB_SSL_ENABLED)
++    if (parts.scheme == "https") {
++        common_ohos_http_ca_store(cli);
++    }
++#endif
++
+     return { std::move(cli), std::move(parts) };
+diff --git a/tools/server/server-models.cpp b/tools/server/server-models.cpp
+--- a/tools/server/server-models.cpp
++++ b/tools/server/server-models.cpp
+@@ -2455,3 +2455,6 @@
+ #ifdef CPPHTTPLIB_OPENSSL_SUPPORT
+         cli.reset(new httplib::SSLClient(host, port));
++#if defined(__OHOS__)
++        common_ohos_http_ca_store(*static_cast<httplib::SSLClient *>(cli.get()));
++#endif
+ #else
+diff --git a/vendor/cpp-httplib/httplib.cpp b/vendor/cpp-httplib/httplib.cpp
+--- a/vendor/cpp-httplib/httplib.cpp
++++ b/vendor/cpp-httplib/httplib.cpp
+@@ -10925,3 +10925,7 @@
++#if defined(__OHOS__)
++    if (!ca_cert_file_path_.empty() || !ca_cert_dir_path_.empty()) {
++#else
+     if (!ca_cert_file_path_.empty()) {
++#endif
+       redirect_client.set_ca_cert_path(ca_cert_file_path_, ca_cert_dir_path_);
+     }

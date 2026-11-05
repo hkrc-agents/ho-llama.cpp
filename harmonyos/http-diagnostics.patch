@@ -1,0 +1,46 @@
+diff --git a/common/download.cpp b/common/download.cpp
+index 6b7123e47..f835f1cad 100644
+--- a/common/download.cpp
++++ b/common/download.cpp
+@@ -409,6 +409,14 @@ static int common_download_file_single_online(const std::string & url,
+ std::pair<long, std::vector<char>> common_remote_get_content(const std::string          & url,
+                                                              const common_remote_params & params) {
+     auto [cli, parts] = common_http_client(url);
++#if defined(__OHOS__) && defined(CPPHTTPLIB_SSL_ENABLED)
++    if (parts.scheme == "https") {
++        const char * ca_dir = std::getenv("SSL_CERT_DIR");
++        if (ca_dir && *ca_dir) cli.set_ca_cert_path("", ca_dir);
++        cli.enable_server_certificate_verification(true);
++        cli.enable_server_hostname_verification(true);
++    }
++#endif
+ 
+     httplib::Headers headers;
+     for (const auto & h : params.headers) {
+@@ -434,7 +442,26 @@ std::pair<long, std::vector<char>> common_remote_get_content(const std::string
+     );
+ 
+     if (!res) {
++#if defined(__OHOS__) && defined(CPPHTTPLIB_SSL_ENABLED)
++        std::string ca_probe;
++        if (const char * ca_dir = std::getenv("SSL_CERT_DIR")) {
++            std::error_code ec;
++            std::filesystem::directory_iterator first(ca_dir, ec);
++            ca_probe = "; ca_dir_errno=" + std::to_string(ec.value());
++            if (!ec && first != std::filesystem::directory_iterator()) {
++                std::ifstream file(first->path(), std::ios::binary);
++                (void)file.peek();
++                ca_probe += "; first_entry_readable=" + std::to_string(file.good());
++            }
++        }
++        throw std::runtime_error("error: cannot make GET request: " + httplib::to_string(res.error()) +
++                                 "; ssl_error=" + std::to_string(res.ssl_error()) +
++                                 "; ssl_backend_error=" + std::to_string(res.ssl_backend_error()) +
++                                 "; SSL_CERT_DIR=" + (std::getenv("SSL_CERT_DIR") ?
++                                 std::getenv("SSL_CERT_DIR") : "unset") + ca_probe);
++#else
+         throw std::runtime_error("error: cannot make GET request");
++#endif
+     }
+ 
+     return { res->status, std::move(buf) };
