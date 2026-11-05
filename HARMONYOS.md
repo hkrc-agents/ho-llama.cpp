@@ -49,3 +49,8 @@ Keep the tested base pin until a newer source has been independently qualified.
 
 Upstream LICENSE, contributor instructions and history remain intact. Future upstream
 submissions require human review; this fork publication does not submit a PR.
+
+## Fused-operator boundary
+
+ho-llama-models is private. Project-specific Ascend C full-network operator sources, build recipes, optimization tools, platform profiles and validation internals belong there.
+After correctness and matched performance qualification and an explicit operator release, ho-llama.cpp may add a small versioned runtime adapter to load and invoke the released artifact. That public adapter must not require private source access. The current HarmonyOS port remains CPU-only; this change adds no NPU integration.

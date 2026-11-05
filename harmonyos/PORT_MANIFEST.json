@@ -3,7 +3,7 @@
   "scope": "Complete maintained HarmonyOS CPU bundle plus independent build driver; no NPU integration",
   "files": {
     "harmonyos/.gitignore": "f8e9033d69a4ad4f66193e823f78c4dc8c0b2fa74b8dbd72968b732c880ff1d6",
-    "harmonyos/AGENTS.md": "a554ea243396e2b80d73b3a78da93f6a134a155b2ac88643967e0e8b3d167ecd",
+    "harmonyos/AGENTS.md": "e13db7358954c8b724776acfb115bb334f8695dd54d4be701a994f5de0aebfe0",
     "harmonyos/BACKLOG.md": "bb3315def025987538df765dda6a9a0758beb11b41c39032b3a0cbcdffbbdfa4",
     "harmonyos/http-ca-store.patch": "8b2b9a7988c29316404f5e0b09fe6cc61e88aef54b611e701ef7912b1c1aa2af",
     "harmonyos/http-diagnostics.patch": "37a2949d90c00b31ed09ca1ff62b2073d879b9ddf1115c00d424a321346e956d",
