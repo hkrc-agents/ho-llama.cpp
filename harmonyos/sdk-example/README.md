@@ -29,6 +29,5 @@ The default remains x86_64/API23. An explicit `--arch arm64` selects an isolated
 arm64-v8a build; supply matching ARM64 archives, never the default x86 libraries.
 The builder checks actual HAP native ELF architecture and binds ARM64 retry
 ownership separately. Build success is not ARM64 runtime, retail signing,
-model accuracy, or long-running lifecycle qualification. The
-private project compatibility wrapper remains `scripts/build_harmonyos_sdk_example.py`.
+model accuracy, or long-running lifecycle qualification. 
 The native example's ownership and cancellation contract is in [SDK notes](../sdk/README.md).

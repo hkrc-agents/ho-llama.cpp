@@ -1,9 +1,9 @@
 # ho-llama.cpp: HarmonyOS PC CPU port
 
 Official llama.cpp fork with the maintained HarmonyOS affinity/portability fix applied,
-SDK examples, native-child entry, HTTP CA-store/TLS candidates and portable CPU build tools.
+SDK examples, native-child entry, HTTP CA-directory support and portable CPU build tools.
 The upstream API and model mathematics are retained. No fused NPU model integration is included.
-[Status and limitations](harmonyos/STATUS.md) | [Validation](harmonyos/VALIDATION.md)
+[Supported build paths](harmonyos/STATUS.md)
 
 ## Standalone CPU tools and SDK
 
@@ -22,8 +22,7 @@ python3 -m unittest discover -s harmonyos/native-server/tests -v
 Outputs: `build/bin/` CPU CLI/server/bench/quantize and bounded tests, `sdk/include/`,
 `sdk/lib/`, and `identity.json` with binary hashes. This minimal standalone recipe has
 HTTPS and subprocess routing disabled. Build success is not device numerical qualification.
-Native-child and managed-service experiments are opt-in; ELF supervision remains the Ollama
-product route. Do not infer a new public libllama ABI from the SDK wrapper examples.
+The standalone native-child entry is optional; it has no application-specific service manager dependency. Do not infer a new public libllama ABI from the SDK wrapper examples.
 
 ## ArkTS/NAPI SDK example
 
@@ -36,8 +35,7 @@ python3 harmonyos/sdk-example/build.py \
 ```
 
 The SDK example is self-contained and requires no Ollama HAP, old experiment template,
-NPU SDK or weights in Git. Personal signing is external. Legacy qualification commands
-in `harmonyos/sdk/README.md` describe historical tests; use this page for independent builds.
+NPU SDK or weights in Git. Personal signing is external. See [SDK ownership notes](harmonyos/sdk/README.md) for the threading and cancellation contract.
 
 ## Matched Ollama runner
 
@@ -50,7 +48,13 @@ Keep the tested base pin until a newer source has been independently qualified.
 Upstream LICENSE, contributor instructions and history remain intact. Future upstream
 submissions require human review; this fork publication does not submit a PR.
 
-## Fused-operator boundary
+## External tools and device startup check
 
-ho-llama-models is private. Project-specific Ascend C full-network operator sources, build recipes, optimization tools, platform profiles and validation internals belong there.
-After correctness and matched performance qualification and an explicit operator release, ho-llama.cpp may add a small versioned runtime adapter to load and invoke the released artifact. That public adapter must not require private source access. The current HarmonyOS port remains CPU-only; this change adds no NPU integration.
+Install the SDK using the [official command-line tools instructions](https://developer.huawei.com/consumer/en/doc/harmonyos-guides/ide-commandline-get). Keep SDK distributions and generated binaries outside tracked source. The build script accepts the installed native SDK explicitly.
+
+```bash
+python3 harmonyos/tools/device_smoke.py --hdc /path/to/hdc --target DEVICE_SERIAL \
+  --binary /path/to/cpu-build/build/bin/llama-cli --out /path/to/new-device-output
+```
+
+This opt-in check stages only that binary in a unique temporary directory, invokes --help and cleans its own files. It does not load a model or establish application permissions, numerical accuracy or performance.

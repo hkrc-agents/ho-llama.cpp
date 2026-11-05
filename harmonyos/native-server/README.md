@@ -6,7 +6,7 @@ Load it only in a dedicated official native child, never in the UI process.
 It calls the pinned `llama_server(argc, argv)` directly through
 `llama-server-impl`; it does not exec, fork, or reimplement HTTP/inference.
 `native_server.cmake` is generic and has no Ollama source dependency.
-The integration wrapper composes it with the existing, unchanged Ollama hook.
+The standalone build needs no application-specific manager or Ollama source.
 
 `entryParams` is a NUL-terminated UTF-8 JSON object, at most 65536 bytes:
 
@@ -34,8 +34,7 @@ use a fresh private run directory per start. Files use exclusive/no-follow open
 and mode 0600. stdout/stderr go to the log; stdin is `/dev/null`. The FD list is
 unused (no Binder FD transport is required). No cwd or environment is modified.
 
-The wrapper does not set or require RLIMIT_AS. As of 2026-11-04 the user
-permanently removed virtual-address caps and per-run exception requests.
+The wrapper does not set or require RLIMIT_AS. No per-run virtual-address-space exception is required.
 Argument validation, file ownership, lifecycle receipts and cleanup remain.
 NDJSON receipts contain schema, phase (`enter`, `return`, `error`),
 PID/PPID/UID/GID, rc, and `address_space_policy: "not-set"`.
@@ -46,26 +45,7 @@ leave only `enter`; the parent must use the official exit callback and health
 check, not infer a clean stop from a receipt. Early errors appear on inherited
 stderr if the private log cannot yet be opened. This is not a stop/ACK protocol.
 
-From the integration workspace:
+## Build and host tests
 
-```bash
-python3 scripts/build_llama_native_child.py --jobs 4 \
-  --out artifacts/llama-native-child-<fresh-run>
-python3 scripts/verify_llama_native_child.py \
-  --out artifacts/llama-native-child-<fresh-run>
-```
-
-The builder takes only the runtime build lock. It uses a fresh ext4 build tree,
-existing patched runner HEAD `631109b34da437a3c4a5ebd75091d677671392e3`, OHOS SDK,
-PIC static dependencies, static C++ runtime, TLS/curl/subprocess disabled, and
-builds only `llama-server-child`. It never patches input sources. Source hashes,
-commands, compiler/toolchain identity, logs, PIC checks and ELF inspection are
-saved beside the actual SO. PIC verification selects every object in the SO's
-transitive Ninja input graph and requires complete compile-command coverage;
-unrelated executable entries in the database do not qualify or disqualify this
-SO. The verifier records the graph, object hashes, static archives, exports,
-dynamic dependencies and the upstream crash-only process imports.
-x86_64 build/ELF inspection is not device, ARM64,
-actual-model or product lifecycle qualification. Keep upstream/vendor licenses
-when packaging the SO. Product packaging, host controller and device acceptance
-belong to the integrator.
+From the repository root, run harmonyos/tools/build_cpu.py with --native-child, an explicit --sdk and a fresh --out directory. Use --arch arm64 only with the matching target SDK and libraries.
+Run python3 -m unittest discover -s harmonyos/native-server/tests -v for argument, file-ownership and entry-point tests. The host server stub does not qualify target HTTP or inference behavior. Logs and NDJSON receipts are generated only in the caller-selected run directory.

@@ -22,39 +22,12 @@ HNP launcher or OMC engine is involved.
 - Let the calling application manage its own background lifecycle. This SDK
   does not borrow the Ollama application's identity or background task.
 
-`apps/sdk-example/` supplies an independent ArkTS/NAPI example. Its system
+`harmonyos/sdk-example/` supplies an independent ArkTS/NAPI example. Its system
 picker imports a model into that application's private directory; its NAPI
 entry dispatches asynchronous native work and rejects a second active job.
 It requests no network permission and contains no HNP package.
 
-## Reproduce the bounded qualification fixture
+## Build and test
 
-From the project root:
-
-```bash
-python3 scripts/build_harmonyos_sdk_example.py --out artifacts/<new-sdk-build>
-python3 scripts/stage_harmonyos_e5_model.py --kind sdk \
-  --hap artifacts/<new-sdk-build>/sdk-example.hap --out artifacts/<new-model-stage>
-python3 scripts/verify_harmonyos_sdk_suite.py --out artifacts/<new-sdk-run>
-python3 scripts/verify_harmonyos_sdk_suite.py --cancel --out artifacts/<new-cancel-run>
-```
-
-The staging script intentionally selects the known E4 export, not an arbitrary
-user file. It is an internal emulator test helper, not a general import CLI.
-The suite runner temporarily stops the normal Ollama services and restores them
-afterward. Keep the normal Ollama application available before running it.
-
-The fixture uses Qwen3.5-0.8B Q4_K_M, context 512, one/two CPU threads, four
-teacher-forced full-vocabulary logits vectors per thread configuration, bounded
-greedy generation, two parallel contexts, abort/recovery and model reload.
-These are test bounds, not public SDK or model-support limits. The example's
-1 GiB picker bound likewise does not limit libllama.
-
-Numerical acceptance uses the project's Linux FP64-RoPE baseline and exact
-FP32 logits bytes, with cosine, maximum absolute error and both KL directions
-also reported by `scripts/compare_harmonyos_sdk_logits.py`. Original-trig Linux
-results remain a separate control. Do not extrapolate one short-prefix fixture
-to all models or long-context numerical qualification.
-
-ARM64, HiShell and final-device lifecycle qualification belong to E6 in
-`design/HARMONYOS_CPU_EXECUTION_PLAN.md`.
+Use ../../HARMONYOS.md and ../sdk-example/README.md with explicit source, library and SDK inputs. The example handles initialization, context ownership, asynchronous work and cooperative cancellation. Select a local GGUF model through the example app; no weights or generated traces are committed.
+Host tests and target compilation do not qualify every model or device. Keep any model-specific numerical reference and experimental mathematical controls outside the platform port.
