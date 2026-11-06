@@ -44,6 +44,7 @@
 /tags
 /.build/
 /build*
+/target/
 /release
 /debug
 /libllama.so

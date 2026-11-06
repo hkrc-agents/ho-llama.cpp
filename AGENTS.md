@@ -7,12 +7,13 @@ builds and [harmonyos/AGENTS.md](harmonyos/AGENTS.md) for port-specific rules.
 
 Install Git, Python 3.10+, CMake, Ninja or Make, a host C/C++ compiler, and the
 official HarmonyOS native SDK. Set `HARMONY_NATIVE_SDK` to the installed
-`openharmony/native` directory. Choose a new output directory outside the
-checkout. This ARM64 example builds the CLI, server and SDK libraries.
+`openharmony/native` directory. Choose a fresh output directory under the
+checkout's Git-ignored `build/` or `target/`. This ARM64 example builds the CLI,
+server and SDK libraries.
 
 ```bash
 python3 harmonyos/tools/build_cpu.py --sdk "$HARMONY_NATIVE_SDK" \
-  --arch arm64 --out /absolute/path/to/new-llama-build --jobs 4
+  --arch arm64 --out "$PWD/build/harmonyos-arm64" --jobs 4
 python3 -m unittest discover -s harmonyos/native-server/tests -v
 ```
 

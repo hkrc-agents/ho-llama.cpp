@@ -9,11 +9,13 @@ The upstream API and model mathematics are retained. No fused NPU model integrat
 
 Requires Linux/WSL, Git, Python 3.10+, CMake, Ninja or Make, a host C/C++ compiler for tests,
 and the external official HarmonyOS native SDK. No Ollama checkout is needed for this build.
+Run the examples from the repository root. Put outputs in fresh subdirectories
+of the Git-ignored `build/` or `target/`.
 
 ```bash
 python3 harmonyos/tools/build_cpu.py \
   --sdk /path/to/sdk/default/openharmony/native \
-  --arch x86_64 --out /path/to/new-cpu-build --jobs 4
+  --arch x86_64 --out "$PWD/build/harmonyos-x86_64" --jobs 4
 # Use --arch arm64 for ARM64 cross compilation.
 # Optional --native-child builds the standalone official native-child entry too.
 python3 -m unittest discover -s harmonyos/native-server/tests -v
@@ -29,9 +31,9 @@ The standalone native-child entry is optional; it has no application-specific se
 ```bash
 python3 harmonyos/sdk-example/build.py \
   --source "$PWD" --expected-commit "$(git rev-parse HEAD)" \
-  --libraries /path/to/new-cpu-build/build \
+  --libraries "$PWD/build/harmonyos-x86_64/build" \
   --tools /path/to/command-line-tools/bin --java /path/to/jdk17 \
-  --sdk-root /path/to/sdk --arch x86_64 --out /path/to/new-sdk-example
+  --sdk-root /path/to/sdk --arch x86_64 --out "$PWD/build/harmonyos-sdk-example"
 ```
 
 The SDK example is self-contained and requires no Ollama HAP, old experiment template,
@@ -54,7 +56,8 @@ Install the SDK using the [official command-line tools instructions](https://dev
 
 ```bash
 python3 harmonyos/tools/device_smoke.py --hdc /path/to/hdc --target DEVICE_SERIAL \
-  --binary /path/to/cpu-build/build/bin/llama-cli --out /path/to/new-device-output
+  --binary "$PWD/build/harmonyos-x86_64/build/bin/llama-cli" \
+  --out "$PWD/build/harmonyos-device-smoke"
 ```
 
 This opt-in check stages only that binary in a unique temporary directory, invokes --help and cleans its own files. It does not load a model or establish application permissions, numerical accuracy or performance.
