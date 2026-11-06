@@ -5,4 +5,4 @@ The application Go toolchain uses Linux/amd64 runtime with OHOS C bindings and t
 The ArkTS/NAPI SDK example supports explicit x86_64 and arm64 source/library inputs.
 
 Host regressions, compilation, device startup, model numerical correctness and retail signing are separate checks. Do not infer ARM64 model numerical or retail/lifecycle qualification from a successful build.
-Use the build and test commands in ../HARMONYOS.md. Keep generated results in an external output directory.
+Use the build and test commands in [HARMONYOS.md](../HARMONYOS.md). Keep generated results in a fresh Git-ignored output directory.
