@@ -1,5 +1,26 @@
 # Instructions for llama.cpp
 
+## First HarmonyOS build in this downstream fork
+
+Use the `harmonyos` branch. Read [HARMONYOS.md](HARMONYOS.md) for the supported
+builds and [harmonyos/AGENTS.md](harmonyos/AGENTS.md) for port-specific rules.
+
+Install Git, Python 3.10+, CMake, Ninja or Make, a host C/C++ compiler, and the
+official HarmonyOS native SDK. Set `HARMONY_NATIVE_SDK` to the installed
+`openharmony/native` directory. Choose a new output directory outside the
+checkout. This ARM64 example builds the CLI, server and SDK libraries.
+
+```bash
+python3 harmonyos/tools/build_cpu.py --sdk "$HARMONY_NATIVE_SDK" \
+  --arch arm64 --out /absolute/path/to/new-llama-build --jobs 4
+python3 -m unittest discover -s harmonyos/native-server/tests -v
+```
+
+Use `--arch x86_64` for that target. Build the ArkTS/NAPI example using
+the SDK example recipe in [HARMONYOS.md](HARMONYOS.md). The standalone build
+needs only this checkout and external tools.
+[Official HarmonyOS Command Line Tools](https://developer.huawei.com/consumer/en/doc/harmonyos-guides/ide-commandline-get)
+
 > [!IMPORTANT]
 >
 > AI-generated code is allowed. What is **not** allowed is submitting code you do not understand. You are 100% responsible for every line, however it was produced.
